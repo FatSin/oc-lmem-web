@@ -18,15 +18,20 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 
-from searchapp import views
-
+from . import views
 
 urlpatterns = [
     #path('admin/', admin.site.urls),
     url(r'^admin/', admin.site.urls),
 
-    url(r'^$', views.index),
-    url(r'^searchapp/', include('searchapp.urls')),
+    url(r'^$', views.index, name='index'),
+    url(r'^product/', views.product, name='product'),
+    url(r'^myaccount/', views.myaccount, name='myaccount'),
+    url(r'^legalnotice/', views.legalnotice, name='legalnotice'),
+
+    #url(r'^$', views.index),
+
+    #url(r'^searchapp/', include('searchapp.urls')), --> NEVER !!!
 ]
 
 if settings.DEBUG:
