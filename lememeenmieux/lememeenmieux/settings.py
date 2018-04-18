@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'lememeenmieux.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql', # on utilise l'adaptateur postgresql
-        'NAME': 'lememeenmieux', # le nom de notre base de donnees creee precedemment
+        'NAME': 'openfood', # le nom de notre base de donnees creee precedemment
         'USER': 'ocsql', # attention : remplacez par votre nom d'utilisateur
         'PASSWORD': 'ocsql',
         'HOST': '',

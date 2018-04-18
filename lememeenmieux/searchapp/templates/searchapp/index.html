@@ -14,7 +14,11 @@
           </div>
           <div class="col-lg-8 mx-auto">
             <p class="text-faded mb-5">Start Bootstrap can help you build better websites using the Bootstrap CSS framework! Just download your template and start going, no strings attached!</p>
-            <a class="btn btn-primary btn-xl js-scroll-trigger" href="#about">Recherche</a>
+            <form action="/searchapp/results">
+              <input type="text" name="query" placeholder="Pâte à tartiner" size="30" maxlength="50">
+              <input type="submit" class="btn btn-primary btn-xl js-scroll-trigger" value="Chercher" method="post" >
+              <!--<a class="btn btn-primary btn-xl js-scroll-trigger" href="/searchapp">Chercher</a>!-->
+            </form>>
           </div>
         </div>
       </div>

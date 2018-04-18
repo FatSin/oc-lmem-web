@@ -2,6 +2,14 @@
 
 {% block content %}
 
-<section>Results</section>
+<section>
+    <h2>Liste des catégories</h2>
+    {% for cat in categories %}
+        <div class="col-sm-4 text-center">
+            <h3>{{ cat.CategoryName }}</h3>
+        </div>
+    {% endfor %}
+
+</section>
 
 {% endblock %}
