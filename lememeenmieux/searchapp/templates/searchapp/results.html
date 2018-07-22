@@ -1,9 +1,27 @@
-{% extends 'searchapp/base.html' %}
+{% extends authenticated|yesno:"searchapp/base_auth.html,searchapp/base.html" %}
 
 {% block content %}
 
 <section>
     <h2>Liste des catégories</h2>
+    <p>Vous avez recherché le produit : {{ product }}</p>
+    <p>Sa catégorie : {{ categ }}</p>
+    <p>Sa note : {{ grade }}</p>
+
+    <p>ID du produit: {{prodid}}<p>
+    <p>{{ message }}</p>
+
+    <p>L'ID du substitut choisi: {{subid}}<p>
+
+    <p>Ses substituts :</p>
+    {% for sub in sublist %}
+        <div class="col-sm-4 text-center">
+            <h3>{{ sub.ProductName }}</h3>
+
+        </div>
+    {% endfor %}
+
+    <p>Catégories de la base : </p>
     {% for cat in categories %}
         <div class="col-sm-4 text-center">
             <h3>{{ cat.CategoryName }}</h3>
@@ -11,5 +29,14 @@
     {% endfor %}
 
 </section>
+<form action="/searchapp/product">
+    <!--<button class="btn btn-primary btn-xl js-scroll-trigger" value="" method="post" name="id">Sauvegarder</button>!-->
+    <input type="hidden" name="prodid" value={{ prodid }}>
+    <input type="hidden" name="subid" value={{ subid }}>
+    <input type="submit" class="btn btn-primary btn-xl js-scroll-trigger" value="Sauvegarder" method="post" >
+
+</form>
+<a class="btn btn-primary btn-xl js-scroll-trigger" href="/">Revenir à l'accueil</a>
+<!--<input type="button" class="btn btn-primary btn-xl js-scroll-trigger" value="Revenir à l'accueil" method="get" action="/searchapp/">!-->
 
 {% endblock %}

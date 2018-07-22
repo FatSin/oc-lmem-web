@@ -275,5 +275,3 @@ while (stay):
 
 
 db.commit()
-
-

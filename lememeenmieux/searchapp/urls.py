@@ -28,6 +28,8 @@ urlpatterns = [
     url(r'^product/', views.product, name='product'),
     url(r'^results/', views.results, name='results'),
     url(r'^myaccount/', views.myaccount, name='myaccount'),
+    url(r'^login/', views.dologin, name='dologin'),
+    url(r'^logout/', views.dologout, name='dologout'),
     url(r'^legalnotice/', views.legalnotice, name='legalnotice'),
 
     #url(r'^$', views.index),

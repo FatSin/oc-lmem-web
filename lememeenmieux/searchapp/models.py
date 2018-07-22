@@ -16,3 +16,4 @@ class Product(models.Model):
 class Substitute(models.Model):
     ProdNum = models.PositiveSmallIntegerField()
     SubNum = models.PositiveSmallIntegerField()
+    UserId = models.PositiveSmallIntegerField()

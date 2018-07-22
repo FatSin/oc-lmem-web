@@ -1,4 +1,4 @@
-{% extends 'searchapp/base.html' %}
+{% extends user.is_authenticated|yesno:"searchapp/base_auth.html,searchapp/base.html" %}
 
 {% block content %}
 
