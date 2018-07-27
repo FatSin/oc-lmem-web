@@ -206,11 +206,17 @@ def update_tables():
                             #print("Ce produit est ajouté :", entry["product_name"])
 
                             if ("stores" in entry.keys() and "purchase_places" in entry.keys() and "url" in entry.keys()):
-                                Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"], Places=entry["purchase_places"][40:], Stores=entry["stores"][40:], Link=entry["url"][50:], CatNum=cat_query.id)
-
+                                if "image_thumb_url" in entry.keys():
+                                    Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"], Places=entry["purchase_places"][40:], Stores=entry["stores"][40:], Link=entry["url"][50:], CatNum=cat_query.id, ImageLink=["image_thumb_url"][150:])
+                                else:
+                                    Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"], Places=entry["purchase_places"][40:], Stores=entry["stores"][40:], Link=entry["url"][50:], CatNum=cat_query.id)
                                 print("stores, place et url :", entry["stores"], entry["purchase_places"], entry["url"])
                             else:
-                                Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"], CatNum=cat_query.id)
+                                if "image_thumb_url" in entry.keys():
+                                    Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"], CatNum=cat_query.id, ImageLink=["image_thumb_url"][150:])
+                                else:
+                                    Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"],
+                                                           CatNum=cat_query.id)
                                 print("Ce produit est ajouté :", entry["product_name"])
 
                     else:

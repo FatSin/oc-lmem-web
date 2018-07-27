@@ -1,35 +1,43 @@
-{% extends authenticated|yesno:"searchapp/base_auth.html,searchapp/base.html" %}
+{% extends user.is_authenticated|yesno:"searchapp/base_auth.html,searchapp/base.html" %}
 
 {% block content %}
 
+{% load static %}
+
+<section style="background-color:black">
+    <div style="background-color:white">{{product}}</div>
+    <img height="70" width="70" src="{{ prodimg }}">
+</section>
+
 <section>
-    <h2>Liste des catégories</h2>
-    <p>Vous avez recherché le produit : {{ product }}</p>
     <p>Sa catégorie : {{ categ }}</p>
     <p>Sa note : {{ grade }}</p>
 
     <p>ID du produit: {{prodid}}<p>
     <p>{{ message }}</p>
+    <p>{{ update }}</p>
 
-    <p>L'ID du substitut choisi: {{subid}}<p>
+    <p>L'ID du meilleur substitut trouvé: {{subid}}<p>
 
     <p>Ses substituts :</p>
     {% for sub in sublist %}
         <div class="col-sm-4 text-center">
             <h3>{{ sub.ProductName }}</h3>
-
-        </div>
-    {% endfor %}
-
-    <p>Catégories de la base : </p>
-    {% for cat in categories %}
-        <div class="col-sm-4 text-center">
-            <h3>{{ cat.CategoryName }}</h3>
+            <img height="100" width="100" src="{{ sub.ImageLink }}">
+            <div>{{sub.Grade}}</div>
+            <img src="{% static 'searchapp/img/save.png' %}" height="30" width="30" alt="floppy">
+            <form action="/searchapp/product/" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="prodid" value={{ prodid }}>
+                <input type="hidden" name="subid" value={{ sub.id }}>
+                <input type="submit" height="10" width="10" class="btn btn-primary btn-xl js-scroll-trigger" value="Sauvegarder" method="post" >
+            </form>
         </div>
     {% endfor %}
 
 </section>
-<form action="/searchapp/product">
+<form action="/searchapp/product/" method="post">
+    {% csrf_token %}
     <!--<button class="btn btn-primary btn-xl js-scroll-trigger" value="" method="post" name="id">Sauvegarder</button>!-->
     <input type="hidden" name="prodid" value={{ prodid }}>
     <input type="hidden" name="subid" value={{ subid }}>

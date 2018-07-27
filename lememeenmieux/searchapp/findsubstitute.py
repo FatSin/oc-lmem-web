@@ -9,7 +9,6 @@ Based on the data of Openfoodfacts website.
 
 def findsubstitute(product):
     #Add the product to the db if it doesn't exist
-
     prod_short = product[0][:40]
     # Check that the product doens't already exist
     lprod = len(list(Product.objects.filter(ProductName=prod_short)))
@@ -57,16 +56,17 @@ def findsubstitute(product):
                 last_cat_id = Category.objects.latest('id').id
                 new_id = last_cat_id + 1
                 Category.objects.create(id=new_id, CategoryName=cat_fin)
-                print("Ce produit est ajouté :", cat_fin)
+                print("Cette catérogie est ajoutée :", cat_fin)
 
-                Product.objects.create(ProductName=prod_short, Grade=product[2], CatNum=new_id)
+                Product.objects.create(ProductName=prod_short, Grade=product[2], CatNum=new_id, ImageLink=product[3][150:])
                 print("Ce produit est ajouté :", prod_short)
 
 
+
             else:
-                    Product.objects.create(ProductName=prod_short, Grade=product[2],
-                                           CatNum=cat_query.id)
-                    print("Ce produit est ajouté :", prod_short)
+                Product.objects.create(ProductName=prod_short, Grade=product[2],
+                                           CatNum=cat_query.id, ImageLink=product[3][150:])
+                print("Ce produit est ajouté :", prod_short)
 
     else:
         print("Le produit existe déjà!")
@@ -97,5 +97,7 @@ def findsubstitute(product):
     else:
         prod_id = Product.objects.filter(ProductName=product[0][:40]).first().id
         sub_id = Product.objects.filter(ProductName=candidate_list[0].ProductName).first().id
+        sub_img = Product.objects.filter(ProductName=candidate_list[0].ProductName).first().ImageLink
+        sub_grade = Product.objects.filter(ProductName=candidate_list[0].ProductName).first().Grade
         #return candidate_list
-        return [candidate_list, prod_id, sub_id]
+        return [candidate_list, prod_id, sub_id, sub_img, sub_grade]
