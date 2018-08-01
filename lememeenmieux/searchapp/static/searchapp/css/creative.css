@@ -40,7 +40,8 @@ h6 {
 
 .bg-primary {
   /*background-color: #F05F40 !important;*/
-  background-color: #212529 !important;
+  /*background-color: #212529 !important;*/
+  background-color: white !important;
 }
 
 .bg-dark {

@@ -26,6 +26,7 @@ urlpatterns = [
 
     url(r'^$', views.index, name='index'),
     url(r'^product/', views.product, name='product'),
+    url(r'^myproducts/', views.myproducts, name='myproducts'),
     url(r'^results/', views.results, name='results'),
     url(r'^myaccount/', views.myaccount, name='myaccount'),
     url(r'^login/', views.dologin, name='dologin'),

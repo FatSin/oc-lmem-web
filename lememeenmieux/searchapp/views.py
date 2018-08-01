@@ -33,7 +33,7 @@ def index(request):
             login(request, user)
 
             if prod_id and sub_id:
-                return product(request)
+                return myproducts(request)
 
             else:
                 context ={'username':usern,
@@ -81,6 +81,7 @@ def results(request):
         Update.objects.create(LastUpdate=datetime.date.today())
         print("Update effectué. Last update effectué il y a "+str(delta.days)+" jours.")
 
+    #update_tables()
 
     #compare to the database
 
@@ -128,7 +129,7 @@ def results(request):
     return render(request, 'searchapp/results.html', context)
 
 
-def product(request):
+def myproducts(request):
     prod_id = request.POST.get('prodid')
     sub_id = request.POST.get('subid')
     user_id = request.user.id
@@ -165,7 +166,7 @@ def product(request):
                 #sub = Product.objects.filter(id=sub_id).first()
                 message = 'Résultat sauvegardé !'
             else:
-                message = 'Vous avez déjà enregistré un substitut pour ce produit.'
+                message = 'Vous avez déjà enregistré ce substitut pour ce produit.'
 
         substitutes = list(Substitute.objects.filter(UserId=user_id))
         saved_list = []
@@ -180,8 +181,18 @@ def product(request):
         context = {'saved' : saved_list,
                    'message' : message}
 
-        return render(request, 'searchapp/product.html', context)
+        return render(request, 'searchapp/myproducts.html', context)
 
+def product(request):
+    prod_id = request.POST.get('prodid')
+    product = Product.objects.filter(id=prod_id).first()
+    categ = Category.objects.filter(id=product.CatNum).first().CategoryName
+
+    context = {'product' : product,
+               'categ' : categ}
+
+
+    return render(request, 'searchapp/product.html', context)
 
 def myaccount(request):
     if request.user.is_authenticated:

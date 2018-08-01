@@ -1,24 +1,18 @@
 {% extends user.is_authenticated|yesno:"searchapp/base_auth.html,searchapp/base.html" %}
 
 {% block content %}
+<section style="background-color:black">
+    <div style="background-color:white">{{product.ProductName}}</div>
+    <img height="70" width="70" src="{{ product.ImageLink }}">
+</section>
 
-<section><h3>Mes aliments sauvegardés </h3>
+<section>
+    <p>Sa catégorie : {{ categ }}</p>
+    <p>Sa note : {{ product.Grade }}</p>
 
-    <p>{{ message }}</p>
+    <p>Vous pouvez vous en procurer ici : {{ product.Places }}, {{ product.Stores }}</p>
+    <p><a href="{{ product.Link }}">Plus d'informations</a></p>
 
-    {% for save in saved %}
-        <div class="col-sm-4 text-center">
-             <p>Vous avez effectué une recherche pour : {{ save.0 }}</h3></p>
-            <p> Substitut proposé : {{ save.1 }} </p>
-        </div>
-    {% endfor %}
-
-    <form action="/searchapp/product/">
-    <!--<button class="btn btn-primary btn-xl js-scroll-trigger" value="" method="post" name="id">Sauvegarder</button>!-->
-        <input type="hidden" name="erase" value=1>
-        <input type="submit" class="btn btn-primary btn-xl js-scroll-trigger" value="Effacer les résultats" method="post" >
-
-    </form>
 
 </section>
 
