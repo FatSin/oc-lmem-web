@@ -127,21 +127,22 @@ def update_tables():
 
                         cat_fin=cat_fin[:40]
 
-                        if (cat_fin == "en:salty-snacks"):
-                            cat_fin="Snacks salés"
-                        if (cat_fin == "en:sugary-snacks"):
-                            cat_fin="Snacks sucrés"
-                        if ((cat_fin == "Pflanzliche Lebensmittel und Getrõnke") or (cat_fin == "en:plant-based-foods-and-beverages")):
-                            cat_fin="Aliments et boissons à base de végétaux"
-                        if (cat_fin == "en:beverages"):
-                            cat_fin="Boissons"
-                        if (cat_fin == "en:dairies"):
+                        if ("en:salty-snacks" in cat_fin):
+                            cat_fin = "Snacks salés"
+                        if ("en:sugary-snacks" in cat_fin):
+                            cat_fin = "Snacks sucrés"
+                        if (("Pflanzliche Lebensmittel und Getrõnke" in cat_fin) or (
+                                "en:plant-based-foods-and-beverages" in cat_fin)):
+                            cat_fin = "Aliments et boissons à base de végétaux"
+                        if ("en:beverages" in cat_fin):
+                            cat_fin = "Boissons"
+                        if ("en:dairies" in cat_fin):
                             cat_fin = "Produits laitiers"
-                        if (cat_fin == "en:desserts"):
+                        if ("en:desserts" in cat_fin):
                             cat_fin = "Desserts"
-                        if (cat_fin == "en:fresh-foods"):
+                        if ("en:fresh-foods" in cat_fin):
                             cat_fin = "Produits Frais"
-                        if (cat_fin == "en:fats"):
+                        if ("en:fats" in cat_fin):
                             cat_fin = "Matières grasses"
                         # Shortcuts
                         if ("Jus" in cat_fin):
@@ -199,20 +200,20 @@ def update_tables():
 
                             # Import information and location, if they exist
                             if ("stores" in entry.keys() and "purchase_places" in entry.keys() and "url" in entry.keys()):
-                                if "image_thumb_url" in entry.keys():
+                                if "image_url" in entry.keys():
                                     Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"],
                                                            Places=entry["purchase_places"][:40],
                                                            Stores=entry["stores"][:40], Link=entry["url"][:50],
-                                                           CatNum=cat_id, ImageLink=entry["image_thumb_url"][:150])
+                                                           CatNum=cat_id, ImageLink=entry["image_url"][:150])
                                 else:
                                     Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"],
                                                            Places=entry["purchase_places"][:40],
                                                            Stores=entry["stores"][:40], Link=entry["url"][:50],
                                                            CatNum=cat_id, ImageLink="/static/searchapp/img/logo.png")
                             else:
-                                if "image_thumb_url" in entry.keys():
+                                if "image_url" in entry.keys():
                                     Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"],
-                                                           CatNum=cat_id, ImageLink=entry["image_thumb_url"][:150])
+                                                           CatNum=cat_id, ImageLink=entry["image_url"][:150])
                                 else:
                                     Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"],
                                                            CatNum=cat_id, ImageLink="/static/searchapp/img/logo.png")
@@ -239,14 +240,14 @@ def update_tables():
                             #print("Ce produit est ajouté :", entry["product_name"])
 
                             if ("stores" in entry.keys() and "purchase_places" in entry.keys() and "url" in entry.keys()):
-                                if "image_thumb_url" in entry.keys():
-                                    Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"], Places=entry["purchase_places"][:40], Stores=entry["stores"][:40], Link=entry["url"][:50], CatNum=cat_query.id, ImageLink=entry["image_thumb_url"][:150])
+                                if "image_url" in entry.keys():
+                                    Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"], Places=entry["purchase_places"][:40], Stores=entry["stores"][:40], Link=entry["url"][:50], CatNum=cat_query.id, ImageLink=entry["image_url"][:150])
                                 else:
                                     Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"], Places=entry["purchase_places"][:40], Stores=entry["stores"][:40], Link=entry["url"][:50], CatNum=cat_query.id, ImageLink="/static/searchapp/img/logo.png")
                                 print("stores, place et url :", entry["stores"], entry["purchase_places"], entry["url"])
                             else:
-                                if "image_thumb_url" in entry.keys():
-                                    Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"], CatNum=cat_query.id, ImageLink=entry["image_thumb_url"][:150])
+                                if "image_url" in entry.keys():
+                                    Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"], CatNum=cat_query.id, ImageLink=entry["image_url"][:150])
                                 else:
                                     Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"],
                                                            CatNum=cat_query.id, ImageLink="/static/searchapp/img/logo.png")

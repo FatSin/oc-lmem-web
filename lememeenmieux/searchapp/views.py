@@ -61,70 +61,88 @@ def results(request):
 
     req = requests.get("https://world.openfoodfacts.org/cgi/search.pl?search_terms="+query+"&countries=en:france&search_simple=1&action=process&json=1")
     data = json.loads(req.content.decode('utf-8'))
-    cat_split = data["products"][0]["categories"].split(',')
-    prod_img = data["products"][0]["image_thumb_url"]
-    #category = cat_split[0]
-    category = cat_split
-    product = [data["products"][0]["product_name"], category, data["products"][0]["nutrition_grades"], prod_img]
 
-    # Update the Product table if last update was too long ago
-    last_update = Update.objects.latest('id')
-    print(last_update.LastUpdate)
-    #last_update.LastUpdate = last_update.LastUpdate.replace(day=10)
-    last_update.save()
-    print(last_update.LastUpdate)
-    date_now = datetime.date.today()
-    delta = date_now - last_update.LastUpdate
-
-    if delta.days >= 10:
-        update_tables()
-        Update.objects.create(LastUpdate=datetime.date.today())
-        print("Update effectué. Last update effectué il y a "+str(delta.days)+" jours.")
-
-    #update_tables()
-
-    #compare to the database
-
-    #sub_list = findsubstitute(product)
-    list_results = findsubstitute(product)
-
-
-    if (list_results ==[]):
-        message ='Pas de substitut trouvé pour ce produit.'
+    if not "categories" in data["products"][0]:
+        message = "Pas assez d'information sur ce produit !"
+        category = []
         sub_list = []
         prod_id = ''
         sub_id = ''
         sub_img = ''
         sub_grade = ''
+        product="Produit introuvable"
+
+        context = {'product' : product,
+                   'message': message}
+
     else:
-        message = 'Vous pouvez remplacer ce produit par :'
-        sub_list = list_results[0]
-        prod_id = list_results[1]
-        sub_id = list_results[2]
-        sub_img = list_results[3]
-        sub_grade = list_results[4]
+        cat_split = data["products"][0]["categories"].split(',')
+        #prod_img = data["products"][0]["image_thumb_url"]
+        prod_img = data["products"][0]["image_url"]
+        #category = cat_split[0]
+        category = cat_split
+        product = [data["products"][0]["product_name"], category, data["products"][0]["nutrition_grades"], prod_img]
+
+        # Update the Product table if last update was too long ago
+        last_update = Update.objects.latest('id')
+        print(last_update.LastUpdate)
+        #last_update.LastUpdate = last_update.LastUpdate.replace(day=10)
+        last_update.save()
+        print(last_update.LastUpdate)
+        date_now = datetime.date.today()
+        delta = date_now - last_update.LastUpdate
+
+        if delta.days >= 10:
+            update_tables()
+            Update.objects.create(LastUpdate=datetime.date.today())
+            print("Update effectué. Last update effectué il y a "+str(delta.days)+" jours.")
+
+        #update_tables()
+
+        #compare to the database
+
+        #sub_list = findsubstitute(product)
+        list_results = findsubstitute(product)
 
 
-    #display the result
+        if (list_results ==[]):
+            message ='Pas de substitut trouvé pour ce produit.'
+            sub_list = []
+            prod_id = ''
+            sub_id = ''
+            sub_img = ''
+            sub_grade = ''
+        else:
+            message = 'Vous pouvez remplacer ce produit par :'
+            sub_list = list_results[0]
+            prod_id = list_results[1]
+            sub_id = list_results[2]
+            sub_img = list_results[3]
+            sub_grade = list_results[4]
+
+
+        #display the result
 
 
 
-    #tata = Category.objects.create(CategoryName="Tata")
-    #tata = Category(CategoryName="Tata")
-    #tata.save()
+        #tata = Category.objects.create(CategoryName="Tata")
+        #tata = Category(CategoryName="Tata")
+        #tata.save()
 
-    categories = Category.objects.all()
-    context = {'categories' : categories,
-               'product' : product[0],
-               'categ' : category,
-               'grade' : product[2],
-               'sublist' : sub_list,
-               'prodid': prod_id,
-               'subid': sub_id,
-               'message' : message,
-               'prodimg': prod_img,
-               'subimg' : sub_img,
-               'subgrade' : sub_grade}
+        #categories = Category.objects.all()
+        cat_id = Product.objects.filter(ProductName=product[0]).first().CatNum
+        category = Category.objects.filter(id=cat_id).first().CategoryName
+
+        context = {'product' : product[0],
+                   'categ' : category,
+                   'grade' : product[2].upper(),
+                   'sublist' : sub_list,
+                   'prodid': prod_id,
+                   'subid': sub_id,
+                   'message' : message,
+                   'prodimg': prod_img,
+                   'subimg' : sub_img,
+                   'subgrade' : sub_grade}
 
     return render(request, 'searchapp/results.html', context)
 

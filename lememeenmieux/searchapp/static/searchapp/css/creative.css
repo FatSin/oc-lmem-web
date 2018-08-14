@@ -38,6 +38,10 @@ h6 {
   font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
 }
 
+h5{
+font-weight:bold;
+}
+
 .bg-primary {
   /*background-color: #F05F40 !important;*/
   /*background-color: #212529 !important;*/
@@ -297,12 +301,12 @@ header.masthead p {
   font-weight: 700;
   text-transform: uppercase;
   border: none;
-  border-radius: 300px;
+  border-radius: 50px;
   font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
 }
 
 .btn-xl {
-  padding: 1rem 2rem;
+  padding: 0.5rem 1.5rem;
 }
 
 .btn-primary {
@@ -318,6 +322,26 @@ header.masthead p {
 .btn-primary:active, .btn-primary:focus {
   box-shadow: 0 0 0 0.2rem rgba(240, 95, 64, 0.5) !important;
 }
+
+.btn-results {
+  font-weight: 500;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 50px;
+  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  background-color: #20B2AA;
+  border-color: #20B2AA;
+  color:white;
+}
+
+.btn-results:hover, .btn-results:focus, .btn-results:active {
+  color: white;
+  background-color: #ee4b28 !important;
+}
+
+//.btn-results:active, .btn-results:focus {
+//  box-shadow: 0 0 0 0.2rem rgba(240, 95, 64, 0.5) !important;
+//}
 
 @media (min-width: 992px) {
   #banner {

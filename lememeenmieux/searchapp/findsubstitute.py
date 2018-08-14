@@ -42,22 +42,22 @@ def findsubstitute(product):
                 else:
                     cat_fin = cat
 
-                if (cat_fin == "en:salty-snacks"):
+                if ("en:salty-snacks" in cat_fin):
                     cat_fin = "Snacks salés"
-                if (cat_fin == "en:sugary-snacks"):
+                if ("en:sugary-snacks" in cat_fin):
                     cat_fin = "Snacks sucrés"
-                if ((cat_fin == "Pflanzliche Lebensmittel und Getrõnke") or (
-                        cat_fin == "en:plant-based-foods-and-beverages")):
+                if (("Pflanzliche Lebensmittel und Getrõnke" in cat_fin) or (
+                        "en:plant-based-foods-and-beverages" in cat_fin)):
                     cat_fin = "Aliments et boissons à base de végétaux"
-                if (cat_fin == "en:beverages"):
+                if ("en:beverages" in cat_fin):
                     cat_fin = "Boissons"
-                if (cat_fin == "en:dairies"):
+                if ("en:dairies" in cat_fin):
                     cat_fin = "Produits laitiers"
-                if (cat_fin == "en:desserts"):
+                if ("en:desserts" in cat_fin):
                     cat_fin = "Desserts"
-                if (cat_fin == "en:fresh-foods"):
+                if ("en:fresh-foods" in cat_fin):
                     cat_fin = "Produits Frais"
-                if (cat_fin == "en:fats"):
+                if ("en:fats" in cat_fin):
                     cat_fin = "Matières grasses"
                 #Shortcuts
                 if ("Jus" in cat_fin):
@@ -142,6 +142,6 @@ def findsubstitute(product):
             pass
         else:
             prod_id = Product.objects.filter(ProductName=prod_short).first().id
-            results = [candidate_list, prod_id, sub_id, sub_img, sub_grade]
+            results = [candidate_list, prod_id, sub_id, sub_img, sub_grade.upper()]
 
     return results
