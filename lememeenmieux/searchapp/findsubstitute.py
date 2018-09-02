@@ -124,14 +124,14 @@ def findsubstitute(product):
                 Category.objects.create(id=new_id, CategoryName=cat_fin)
                 print("Cette catérogie est ajoutée :", cat_fin)
 
-                Product.objects.create(ProductName=prod_short, Grade=product[2], CatNum=new_id, ImageLink=product[3][:150])
+                Product.objects.create(ProductName=prod_short, Grade=product[2], CatNum=new_id, ImageLink=product[3][:150],Link=product[4][:150])
                 print("Ce produit est ajouté :", prod_short)
 
 
 
             else:
                 Product.objects.create(ProductName=prod_short, Grade=product[2],
-                                       CatNum=cat_query.id, ImageLink=product[3][:150])
+                                       CatNum=cat_query.id, ImageLink=product[3][:150],Link=product[4][:150])
                 print("Ce produit est ajouté :", prod_short)
 
         else:

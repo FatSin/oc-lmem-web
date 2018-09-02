@@ -27,71 +27,7 @@
     <!-- Custom styles for this template -->
     <link href="{% static 'searchapp/css/creative.css' %}" rel="stylesheet">
 
-    <style>
-        #about
-        {
-        background-color:white;
-        color:black;
-        padding-top:50px;
-        }
-        #pabout{
-        margin-top:20px;
-        margin-bottom:20px;
-        }
-        #pcolette{
-        padding-left:20px;
-        padding-right:20px;
-        }
-        imgremy{
-        margin-bottom:12px;
-        }
-        #premy{
-        padding-left:20px;
-        padding-right:20px;
-        }
-        #contact
-        {
-        background-color:#345a61;
-        color:white;
-        }
-        footer
-        {
-        color:black;
-        background-color:white;
-        padding-top:20px;
-        padding-bottom:20px;
-        font-size:0.9rem;
-        font-weight:700;
-        text-transform:uppercase;
-        }
-        #product
-        {
-        height:270px;
-        /*background-color:#A9A9A9;*/
-        padding-top:10px;
-        background-image:url('{% static 'searchapp/img/fond_trans.jpg' %}');
-        background-size:cover;
-       // background-image:url('{% static 'searchapp/img/logo_grey.png' %}');
-        position:relative;
-        }
-        #description
-        {
-        padding-top:50px;
-        padding-bottom:50px;
-        //background-color:#F4A460;
-        color:#EE8530;
-        font-weight:bold;
-        margin-top:20px;
-        margin-bottom:20px;
-        }
-        #substitutes
-        {
-        padding-top:50px;
-        background-color:#fee8d6;
-        color:white;
-        }
 
-    </style>
   </head>
 
   <body id="page-top">
@@ -99,7 +35,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
       <div class="container">
-          <img src="{% static 'searchapp/img/logo.png' %}" width="2%" alt="">
+          <img class="hidden-xs" src="{% static 'searchapp/img/logo.png' %}" width="2%" alt="">
         <a class="navbar-brand js-scroll-trigger" href="/searchapp/">Pur Beurre</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -131,15 +67,15 @@
 
 
     <footer>
-		<div class="container">
+		<div class="container hidden-xs">
 			<div class="row">
 				<div class="col-xs-4 col-md-4 text-center nav-link">
 					<a href="/searchapp/legalnotices/">Mentions Légales</a>
 				</div>
-				<div class="col-xs-4 col-md-4 text-center">
+				<div class="col-xs-4 col-md-4 text-center nav-link">
 					<a href="#about">Qui sommes-nous ?</a>
 				</div>
-				<div class="col-xs-4 col-md-4 text-center">
+				<div class="col-xs-4 col-md-4 text-center nav-link">
 					<a href="#contact">Contact</a>
 				</div>
 			</div>

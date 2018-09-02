@@ -11,7 +11,7 @@ class Product(models.Model):
     Places = models.CharField(max_length=40, null=True)
     Stores = models.CharField(max_length=40, null=True)
     Grade = models.CharField(max_length=1, null=True)
-    Link = models.CharField(max_length=100, null=True)
+    Link = models.CharField(max_length=150, null=True)
     ImageLink = models.CharField(max_length=150, default='https://cdn.pixabay.com/photo/2017/02/14/07/44/cake-2065046_1280.jpg')
 
 class Substitute(models.Model):

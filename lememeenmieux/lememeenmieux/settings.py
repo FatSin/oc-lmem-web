@@ -23,9 +23,26 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 's!$g3422sh0-f%cak8)$^^i_o2h3jg3kjip!&w@c=c0omtj!cm'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
+#DEBUG = False
 
-ALLOWED_HOSTS = []
+if os.environ.get('ENV') == 'PRODUCTION':
+    DEBUG = False
+else:
+    DEBUG = True
+
+#ALLOWED_HOSTS = ['127.0.0.1','localhost']
+ALLOWED_HOSTS = ['lememeenmieux.herokuapp.com']
+
+if os.environ.get('ENV') == 'PRODUCTION':
+    # Static files settings
+    PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+    STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+    # Extra places for collectstatic to find static files.
+    STATICFILES_DIRS = (
+        os.path.join(PROJECT_ROOT, 'static'),
+    )
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # Application definition
@@ -50,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 INTERNAL_IPS = ['127.0.0.1']

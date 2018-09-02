@@ -1,10 +1,22 @@
 {% extends user.is_authenticated|yesno:"searchapp/base_auth.html,searchapp/base.html" %}
 
 {% block content %}
+
+{% load static %}
+
+<section class="banner" id="product" >
+        <div class="text-center">[ {{product.ProductName}} ]
+        </div>
+        <img height="200px" width="200px" src="{{ product.ImageLink }}">
+
+</section>
+
+<!--
 <section style="background-color:black">
     <div style="background-color:white">{{product.ProductName}}</div>
     <img height="70" width="70" src="{{ product.ImageLink }}">
 </section>
+
 
 <section>
     <p>Sa catégorie : {{ categ }}</p>
@@ -15,7 +27,35 @@
 
 
 </section>
+!-->
 
+<section id="product-details">
+    <div class="container">
+
+        <div style="margin-bottom:100px;" class="row">
+
+            <div  class="col-sm-4 text-center">
+                <img height="120px" width="250px" src="/static/searchapp/img/{{scoreimg}}">
+                <!--<h4>Sa note : <inline style="text-transform:uppercase;">{{ product.Grade }}</inline></h4>!-->
+            </div>
+            <div style="padding-top:80px;" class="col-sm-4 text-center">
+                <h4>Sa catégorie : {{ categ }}</h4>
+            </div>
+            <div style="padding-top:70px;" class="col-sm-4 text-center">
+                <h4>{{ message }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="container text-center">
+        <div style="background-color:#ee4b28;" class="btn btn-results btn-xl js-scroll-trigger text-center">
+            <a href="{{ product.Link }}">Plus d'informations sur Open Food Facts</a>
+        </div>
+    </div>
+
+
+</section>
+<hr class="hr-long">
 
 
 {% endblock %}

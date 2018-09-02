@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.http import Http404
 
 from .models import Category, Product, Substitute, Update
 from .update_tables import update_tables
@@ -19,7 +20,6 @@ def index(request):
     create_user = request.POST.get('createuser')
     prod_id = request.POST.get('prodid')
     sub_id = request.POST.get('subid')
-
 
 
     if create_user:
@@ -59,10 +59,39 @@ def results(request):
     query = request.GET.get('query')
     #retrieve the query from the search bar
 
-    req = requests.get("https://world.openfoodfacts.org/cgi/search.pl?search_terms="+query+"&countries=en:france&search_simple=1&action=process&json=1")
-    data = json.loads(req.content.decode('utf-8'))
+    try:
+        req = requests.get("https://world.openfoodfacts.org/cgi/search.pl?search_terms="+query+"&countries=en:france&search_simple=1&action=process&json=1")
+        data = json.loads(req.content.decode('utf-8'))
+    except:
+        data = {
+                  "skip": 0,
+                  "page_size": "0",
+                  "page": 1,
+                  "products": [
+                    {"":""
+                    }
+                  ],
+                  "count": 0
+                }
 
-    if not "categories" in data["products"][0]:
+    if data["products"] == []:
+        message = "Désolé, ce produit n'existe pas dans la base !"
+        category = []
+        sub_list = []
+        prod_id = ''
+        sub_id = ''
+        sub_img = ''
+        sub_grade = ''
+        product = "Produit introuvable"
+
+        context = {'product': product,
+                   'message': message,
+                   'prodimg': '/static/searchapp/img/plate.png'}
+
+        #return render(request, 'searchapp/404.html', context)
+        raise Http404("Produit introuvable")
+
+    elif not "categories" in data["products"][0]:
         message = "Pas assez d'information sur ce produit !"
         category = []
         sub_list = []
@@ -73,15 +102,17 @@ def results(request):
         product="Produit introuvable"
 
         context = {'product' : product,
-                   'message': message}
+                   'message': message,
+                   'prodimg': '/static/searchapp/img/plate.png'}
+
+        #return render(request, 'searchapp/404.html', context)
+        raise Http404("Produit introuvable")
 
     else:
-        cat_split = data["products"][0]["categories"].split(',')
+        categories = data["products"][0]["categories"].split(',')
         #prod_img = data["products"][0]["image_thumb_url"]
         prod_img = data["products"][0]["image_url"]
-        #category = cat_split[0]
-        category = cat_split
-        product = [data["products"][0]["product_name"], category, data["products"][0]["nutrition_grades"], prod_img]
+        product = [data["products"][0]["product_name"], categories, data["products"][0]["nutrition_grades"], prod_img,data["products"][0]["url"]]
 
         # Update the Product table if last update was too long ago
         last_update = Update.objects.latest('id')
@@ -108,7 +139,7 @@ def results(request):
         if (list_results ==[]):
             message ='Pas de substitut trouvé pour ce produit.'
             sub_list = []
-            prod_id = ''
+            prod_id = Product.objects.filter(ProductName=product[0][:40]).first().id
             sub_id = ''
             sub_img = ''
             sub_grade = ''
@@ -122,12 +153,6 @@ def results(request):
 
 
         #display the result
-
-
-
-        #tata = Category.objects.create(CategoryName="Tata")
-        #tata = Category(CategoryName="Tata")
-        #tata.save()
 
         #categories = Category.objects.all()
         cat_id = Product.objects.filter(ProductName=product[0]).first().CatNum
@@ -144,7 +169,7 @@ def results(request):
                    'subimg' : sub_img,
                    'subgrade' : sub_grade}
 
-    return render(request, 'searchapp/results.html', context)
+        return render(request, 'searchapp/results.html', context)
 
 
 def myproducts(request):
@@ -158,7 +183,7 @@ def myproducts(request):
         Substitute.objects.all().delete()
 
     if user_id is None:
-        message='Connectez-vous afin de pouvoir sauvegarder ce résultat.'
+        message='Connectez-vous afin de pouvoir sauvegarder vos recherches.'
         page_link = "/searchapp/product"
 
         context = {'prodid': prod_id,
@@ -168,8 +193,10 @@ def myproducts(request):
         return render(request, 'searchapp/login.html', context)
 
     else:
+        print(prod_id)
+        print(sub_id)
         #Check if the user has pressed the Save button from the results page
-        if (prod_id is None or sub_id is None):
+        if (prod_id is None or sub_id is None or prod_id == "None" or sub_id == "None"):
             #prod_id = 'rien du tout'
             #sub_id = 'rien du tout'
             message=''
@@ -190,10 +217,10 @@ def myproducts(request):
         saved_list = []
 
         for save in substitutes:
-            product = Product.objects.filter(id=save.ProdNum).first().ProductName
-            substitute = Product.objects.filter(id=save.SubNum).first().ProductName
-            minilist = [product, substitute]
-
+            product = Product.objects.filter(id=save.ProdNum).first()
+            substitute = Product.objects.filter(id=save.SubNum).first()
+            minilist = [product.ProductName, substitute.ProductName, save.ProdNum,
+                        save.SubNum, product.ImageLink, substitute.ImageLink]
             saved_list.append(minilist)
 
         context = {'saved' : saved_list,
@@ -203,26 +230,57 @@ def myproducts(request):
 
 def product(request):
     prod_id = request.POST.get('prodid')
-    product = Product.objects.filter(id=prod_id).first()
-    categ = Category.objects.filter(id=product.CatNum).first().CategoryName
 
-    context = {'product' : product,
-               'categ' : categ}
+    try:
+        product = Product.objects.filter(id=prod_id).first()
+        categ = Category.objects.filter(id=product.CatNum).first().CategoryName
 
+        if product.Grade == 'a':
+            img_score = "score_a.jpg"
+        elif product.Grade == 'b':
+            img_score = "score_b.jpg"
+        elif product.Grade == 'c':
+            img_score = "score_c.jpg"
+        elif product.Grade == 'd':
+            img_score = "score_d.jpg"
+        elif product.Grade == 'e':
+            img_score = "score_e.jpg"
 
+        if not product.Stores:
+            if not product.Places:
+                message = "Il n'y a pas de lieu de vente connu pour ce produit."
+            else:
+                message = "Vous pouvez-vous procurer ce produit ici : "+product.Places
+        else:
+            message = "Vous pouvez-vous procurer ce produit ici : "+product.Places+", "+product.Stores
+
+        context = {'product': product,
+                   'categ': categ,
+                   'message': message,
+                   'scoreimg': img_score}
+
+    except:
+        #404 error page
+        return render(request, 'searchapp/404.html')
+        #raise Http404("Produit introuvable")
     return render(request, 'searchapp/product.html', context)
 
 def myaccount(request):
+
     if request.user.is_authenticated:
         usern = request.user.username
         authenticated=request.user.is_authenticated
+        context = {'username': usern,
+                   'authenticated': authenticated}
+
+        return render(request, 'searchapp/myaccount.html', context)
+
     else:
         authenticated = request.user.is_authenticated
         usern=''
+        return render(request, 'searchapp/login.html')
 
-    context = {'username': usern,
-               'authenticated': authenticated}
-    return render(request, 'searchapp/myaccount.html', context)
+
 
 
 def dologin(request):

@@ -1,0 +1,40 @@
+{% extends user.is_authenticated|yesno:"searchapp/base_auth.html,searchapp/base.html" %}
+
+{% block content %}
+
+{% load static %}
+
+<section class="banner"  >
+        <div id="error" class="text-center">404
+        </div>
+
+</section>
+
+<!--
+<section style="background-color:black">
+    <div style="background-color:white">{{product.ProductName}}</div>
+    <img height="70" width="70" src="{{ product.ImageLink }}">
+</section>
+
+
+<section>
+    <p>Sa catégorie : {{ categ }}</p>
+    <p>Sa note : {{ product.Grade }}</p>
+
+    <p>Vous pouvez vous en procurer ici : {{ product.Places }}, {{ product.Stores }}</p>
+    <p><a href="{{ product.Link }}">Plus d'informations</a></p>
+
+
+</section>
+!-->
+
+<section id="error-text">
+    <div class="container text-center">
+            {{message}}
+    </div>
+
+</section>
+<hr class="hr-thin">
+
+
+{% endblock %}
