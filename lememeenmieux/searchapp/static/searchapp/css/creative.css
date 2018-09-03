@@ -61,7 +61,6 @@ footer a:hover
     height:270px;
     /*background-color:#A9A9A9;*/
     padding-top:10px;
-    //background-image:url('{% static 'searchapp/img/fond_trans.jpg' %}');
     background-image:url('../img/fond_trans.jpg');
     background-size:cover;
     position:relative;
@@ -72,7 +71,6 @@ footer a:hover
     height:270px;
     /*background-color:#A9A9A9;*/
     padding-top:10px;
-    //background-image:url('{% static 'searchapp/img/fond_trans.jpg' %}');
     background-image:url('../img/fond_trans.jpg');
     background-size:cover;
     position:relative;
