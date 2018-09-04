@@ -1,0 +1,72 @@
+{% extends user.is_authenticated|yesno:"searchapp/base_auth.html,searchapp/base.html" %}
+
+{% block content %}
+
+{% load static %}
+
+<section class="banner-dark">
+        <div class="text-center banner-text">Mes aliments sauvegardés
+        </div>
+
+</section>
+
+<section id="section-myp">
+    <div class="container">
+
+        <div class="text-center">{{ message }}</div>
+        <div class="row">
+            <div class="col-sm-4 text-center">
+                <h3> Produits recherchés</h3>
+            </div>
+            <div class="col-sm-4 text-center">
+            </div>
+            <div class="col-sm-4 text-center">
+                <h3> Substituts proposés</h3>
+            </div>
+        </div>
+        <br><br>
+
+        {% for save in saved %}
+            <div class="row">
+                <div class="col-sm-4 text-center">
+                     <p>{{ save.0 }}</h3></p>
+                    <img src="{{save.4}}" height="120" width="120" alt="arrow">
+                     <form action="/searchapp/product/" method="post" target="_blank">
+                        {% csrf_token %}
+                        <input type="hidden" name="prodid" value={{ save.2 }}>
+                        <!--<input type="submit"   height="4" width="4" class="btn-results btn-xl js-scroll-trigger" value="Détails" method="post" >!-->
+                        <input class="js-scroll-trigger details" type="submit"   height="4" width="4" value="Détails" method="post" >
+                    </form>
+                </div>
+                <div class="col-sm-4 text-center">
+                    <img style="margin-top: 50px;" src="{% static 'searchapp/img/arrow6.png' %}" height="100" width="150" alt="arrow">
+                </div>
+
+                <div class="col-sm-4 text-center">
+                    <p>{{ save.1 }} </p>
+                    <img src="{{save.5}}" height="120" width="120" alt="arrow">
+                    <form action="/searchapp/product/" method="post" target="_blank">
+                        {% csrf_token %}
+                        <input type="hidden" name="prodid" value={{ save.3 }}>
+                        <!--<input type="submit"   height="4" width="4" class="btn-results btn-xl js-scroll-trigger" value="Détails" method="post" >!-->
+                        <input class="js-scroll-trigger details" type="submit"   height="4" width="4" value="Détails" method="post" >
+                    </form>
+                </div>
+            </div>
+        <br><br><br>
+        {% endfor %}
+    </div>
+    <br><br>
+    <div class="container text-center">
+        <form action="/searchapp/myproducts/">
+        <!--<button class="btn btn-primary btn-xl js-scroll-trigger" value="" method="post" name="id">Sauvegarder</button>!-->
+            <input type="hidden" name="erase" value=1>
+            <input type="submit" class="btn btn-primary btn-xl js-scroll-trigger" value="Effacer les résultats" method="post" >
+
+        </form>
+    </div>
+</section>
+
+
+
+{% endblock %}
