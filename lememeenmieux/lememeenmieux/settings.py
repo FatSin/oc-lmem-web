@@ -83,7 +83,10 @@ MIDDLEWARE = [
 
 INTERNAL_IPS = ['127.0.0.1']
 
-ROOT_URLCONF = 'lememeenmieux.urls'
+if os.environ.get('ENV') == 'PRODUCTION':
+    ROOT_URLCONF = 'lememeenmieux.lememeenmieux.urls'
+else:
+    ROOT_URLCONF = 'lememeenmieux.urls'
 
 TEMPLATES = [
     {
