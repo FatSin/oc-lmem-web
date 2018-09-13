@@ -28,7 +28,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
     url(r'^$', views.index),
-    url(r'^searchapp/', include('searchapp.urls')),
+    url(r'^searchapp/', include('lememeenmieux.searchapp.urls')),
 ]
 
 if settings.DEBUG:
