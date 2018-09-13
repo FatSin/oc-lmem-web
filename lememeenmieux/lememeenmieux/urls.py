@@ -18,9 +18,9 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 
-import sys
-sys.path.append(sys.path[0] + "\lememeenmieux")
-from searchapp import views
+#import sys
+#sys.path.append(sys.path[0] + "\lememeenmieux")
+from lememeenmieux.searchapp import views
 
 
 urlpatterns = [
