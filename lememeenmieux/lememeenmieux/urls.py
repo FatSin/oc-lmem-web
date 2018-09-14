@@ -14,22 +14,36 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+import os
+
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 
 #import sys
 #sys.path.append(sys.path[0] + "\lememeenmieux")
-from lememeenmieux.searchapp import views
+if os.environ.get('ENV') == 'PRODUCTION':
+    from lememeenmieux.searchapp import views
+else:
+    from searchapp import views
 
 
-urlpatterns = [
-    #path('admin/', admin.site.urls),
-    url(r'^admin/', admin.site.urls),
+if os.environ.get('ENV') == 'PRODUCTION':
+    urlpatterns = [
+        #path('admin/', admin.site.urls),
+        url(r'^admin/', admin.site.urls),
 
-    url(r'^$', views.index),
-    url(r'^searchapp/', include('lememeenmieux.searchapp.urls')),
-]
+        url(r'^$', views.index),
+        url(r'^searchapp/', include('lememeenmieux.searchapp.urls')),
+    ]
+else:
+    urlpatterns = [
+        # path('admin/', admin.site.urls),
+        url(r'^admin/', admin.site.urls),
+
+        url(r'^$', views.index),
+        url(r'^searchapp/', include('searchapp.urls')),
+    ]
 
 if settings.DEBUG:
     import debug_toolbar

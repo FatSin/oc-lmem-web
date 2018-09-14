@@ -1,6 +1,9 @@
+import os
 from django.apps import AppConfig
 
 
 class SearchappConfig(AppConfig):
-    #name = 'searchapp'
-    name = 'lememeenmieux.searchapp'
+    if os.environ.get('ENV') == 'PRODUCTION':
+        name = 'lememeenmieux.searchapp'
+    else:
+        name = 'searchapp'
