@@ -3,7 +3,13 @@ import os
 import sys
 
 if __name__ == "__main__":
+
+    if os.environ.get('ENV') == 'PRODUCTION':
+        sys.path.append(sys.path[0] + "/../lememeenmieux")
+
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lememeenmieux.settings")
+
+    #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lememeenmieux.settings")
     #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lememeenmieux.lememeenmieux.settings")
     try:
         from django.core.management import execute_from_command_line
