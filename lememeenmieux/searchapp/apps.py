@@ -8,4 +8,4 @@ class SearchappConfig(AppConfig):
     else:
         name = 'searchapp'
 
-        
+
