@@ -6,8 +6,9 @@ if __name__ == "__main__":
 
     #if os.environ.get('ENV') == 'PRODUCTION':
     sys.path.append(sys.path[0] + "/../lememeenmieux")
+    sys.path.append(sys.path[0] + "/../lememeenmieux/lememeenmieux")
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lememeenmieux.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lememeenmieux.lememeenmieux.settings")
 
     #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lememeenmieux.settings")
     #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lememeenmieux.lememeenmieux.settings")
