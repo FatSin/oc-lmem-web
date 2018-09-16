@@ -12,7 +12,8 @@ import os
 from django.core.wsgi import get_wsgi_application
 
 if os.environ.get('ENV') == 'PRODUCTION':
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lememeenmieux.cestwsgi.settings")
+    sys.path.append(sys.path[0] + "/../lememeenmieux")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lememeenmieux.settings")
 else:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lememeenmieux.settings")
 

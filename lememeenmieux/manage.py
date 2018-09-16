@@ -5,6 +5,7 @@ import sys
 if __name__ == "__main__":
 
     if os.environ.get('ENV') == 'PRODUCTION':
+
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lememeenmieux.cestmanage.settings")
     else:
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lememeenmieux.settings")
