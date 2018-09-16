@@ -7,3 +7,5 @@ class SearchappConfig(AppConfig):
         name = 'lememeenmieux.searchapp'
     else:
         name = 'searchapp'
+
+        
