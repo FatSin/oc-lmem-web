@@ -55,7 +55,7 @@ if os.environ.get('ENV') == 'PRODUCTION':
         'django.contrib.messages',
         'django.contrib.staticfiles',
         'debug_toolbar',
-        'searchapp.apps.SearchappConfig',
+        'lememeenmieux.searchapp.apps.SearchappConfig',
     ]
 else:
     INSTALLED_APPS = [
