@@ -114,7 +114,7 @@ def results(request):
         prod_img = data["products"][0]["image_url"]
         product = [data["products"][0]["product_name"], categories, data["products"][0]["nutrition_grades"], prod_img,data["products"][0]["url"]]
 
-        date_now = datetime.date.today()
+
         # Update the Product table if last update was too long ago
         try:
             last_update = Update.objects.latest('id')
@@ -123,8 +123,9 @@ def results(request):
             last_update.save()
             print(last_update.LastUpdate)
         except:
-            last_update = Update.objects.create(LastUpdate=date_now)
+            last_update = Update.objects.create(LastUpdate="2018-01-01")
 
+        date_now = datetime.date.today()
         delta = date_now - last_update.LastUpdate
 
         if delta.days >= 10:
@@ -132,7 +133,7 @@ def results(request):
             Update.objects.create(LastUpdate=datetime.date.today())
             print("Update effectué. Last update effectué il y a "+str(delta.days)+" jours.")
 
-        #update_tables()
+        update_tables()
 
         #compare to the database
 
