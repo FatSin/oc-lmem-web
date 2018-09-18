@@ -114,13 +114,17 @@ def results(request):
         prod_img = data["products"][0]["image_url"]
         product = [data["products"][0]["product_name"], categories, data["products"][0]["nutrition_grades"], prod_img,data["products"][0]["url"]]
 
-        # Update the Product table if last update was too long ago
-        last_update = Update.objects.latest('id')
-        print(last_update.LastUpdate)
-        #last_update.LastUpdate = last_update.LastUpdate.replace(day=10)
-        last_update.save()
-        print(last_update.LastUpdate)
         date_now = datetime.date.today()
+        # Update the Product table if last update was too long ago
+        try:
+            last_update = Update.objects.latest('id')
+            print(last_update.LastUpdate)
+            #last_update.LastUpdate = last_update.LastUpdate.replace(day=10)
+            last_update.save()
+            print(last_update.LastUpdate)
+        except:
+            last_update = Update.objects.create(LastUpdate=date_now)
+
         delta = date_now - last_update.LastUpdate
 
         if delta.days >= 10:
