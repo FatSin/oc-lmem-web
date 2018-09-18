@@ -25,7 +25,7 @@ from django.contrib import admin
 if os.environ.get('ENV') == 'PRODUCTION':
     from lememeenmieux.searchapp import views
 else:
-    from searchapp import views
+    from lememeenmieux.searchapp import views
 
 
 if os.environ.get('ENV') == 'PRODUCTION':
@@ -42,7 +42,7 @@ else:
         url(r'^admin/', admin.site.urls),
 
         url(r'^$', views.index),
-        url(r'^searchapp/', include('searchapp.urls')),
+        url(r'^searchapp/', include('lememeenmieux.searchapp.urls')),
     ]
 
 if settings.DEBUG:

@@ -68,7 +68,8 @@ else:
         'django.contrib.messages',
         'django.contrib.staticfiles',
         'debug_toolbar',
-        'searchapp.apps.SearchappConfig',
+        #'searchapp.apps.SearchappConfig',
+        'lememeenmieux.searchapp.apps.SearchappConfig',
     ]
 
 MIDDLEWARE = [
@@ -88,7 +89,7 @@ INTERNAL_IPS = ['127.0.0.1']
 if os.environ.get('ENV') == 'PRODUCTION':
     ROOT_URLCONF = 'lememeenmieux.lememeenmieux.urls'
 else:
-    ROOT_URLCONF = 'lememeenmieux.urls'
+    ROOT_URLCONF = 'lememeenmieux.lememeenmieux.urls'
 
 TEMPLATES = [
     {
@@ -106,7 +107,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'lememeenmieux.wsgi.application'
+WSGI_APPLICATION = 'lememeenmieux.lememeenmieux.wsgi.application'
 
 
 # Database

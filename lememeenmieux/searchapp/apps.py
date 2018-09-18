@@ -8,6 +8,6 @@ class SearchappConfig(AppConfig):
     if os.environ.get('ENV') == 'PRODUCTION':
         name = 'lememeenmieux.searchapp'
     else:
-        name = 'searchapp'
+        name = 'lememeenmieux.searchapp'
 
 
