@@ -123,10 +123,10 @@ def results(request):
         date_now = datetime.date.today()
         delta = date_now - last_update.LastUpdate
 
-        #if delta.days >= 10:
-        #    update_tables()
-        #    Update.objects.create(LastUpdate=datetime.date.today())
-        #    print("Update effectué. Last update effectué il y a "+str(delta.days)+" jours.")
+        if delta.days >= 10:
+            update_tables()
+            Update.objects.create(LastUpdate=datetime.date.today())
+            print("Update effectué. Last update effectué il y a "+str(delta.days)+" jours.")
 
         #update_tables()
 
