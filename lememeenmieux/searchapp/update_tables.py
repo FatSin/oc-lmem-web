@@ -1,17 +1,22 @@
-import requests
-#import MySQLdb
+"""
+This function updates the tables Categories, Products and Substitutes, depending on
+the date of the previous update. The table Products and Categories are populated with
+data from Open Food Facts database. While The substitutes table is flushed.
+"""
+
 import json
 import re
+
+import requests
 
 from .models import Category, Product, Substitute
 
 
-"""
-    Script for the creation and population of Openfood local db's tables,
-    from online data. The db must be created (no data necesary) before launching the script.
-"""
-
 def update_tables():
+    """
+    Main and single function
+    """
+
     #HTTP Requests To Retrieve the 1st 3 pages of the products sold in France
     req1 = requests.get('https://world.openfoodfacts.org/country/france.json')
     req2 = requests.get('https://world.openfoodfacts.org/country/france/2.json')
@@ -19,7 +24,8 @@ def update_tables():
     req4 = requests.get('https://world.openfoodfacts.org/country/france/4.json')
     req5 = requests.get('https://world.openfoodfacts.org/country/france/5.json')
 
-    #Conversion of HTTP content into json, and utf8-decoding to avoid charset conflicts due to FR characters
+    #Conversion of HTTP content into json, and utf8-decoding to avoid
+    # charset conflicts due to FR characters
     data1 = json.loads(req1.content.decode('utf-8'))
     data2 = json.loads(req2.content.decode('utf-8'))
     data3 = json.loads(req3.content.decode('utf-8'))
@@ -27,81 +33,19 @@ def update_tables():
     data5 = json.loads(req5.content.decode('utf-8'))
 
     data = [data1, data2, data3, data4, data5]
-    #data = [data1]
-
-    #Connection to openfood db (The password will be stored in another file later !!)
-    #db=MySQLdb.connect(user="root",passwd="ocsql",db="openfood")
-
-    #c=db.cursor()
-
-    """
-    #Decoding to avoid charset conflicts due to FR characters, again
-    #db.set_character_set('utf8')
-    #c.execute('SET NAMES utf8;')
-    #c.execute('SET CHARACTER SET utf8;')
-    #c.execute('SET character_set_connection=utf8;')
-    """
-
-    #Erase the existing tables
-    #c.execute("""DROP TABLE IF EXISTS Substitutes """)
-    #c.execute("""DROP TABLE IF EXISTS Products """)
-    #c.execute("""DROP TABLE IF EXISTS Categories """)
-
-
-    #c.execute("""ALTER TABLE Products
-    #           DROP FOREIGN KEY prod_k""")
-    """
-    c.execute('TRUNCATE TABLE Substitutes;')
-    c.execute('TRUNCATE TABLE  Products;')
-    c.execute('TRUNCATE TABLE  Categories;')
-    """
-    #c.execute("""ALTER TABLE Products
-    #            ADD CONSTRAINT prod_k FOREIGN KEY (CatNum) REFERENCES Categories (id)""")
-    #c.execute("""ALTER TABLE Substitutes
-    #            ADD CONSTRAINT sub_k FOREIGN KEY (ProdNum) REFERENCES Products (id)""")
-
-    #Creation of Categories and Products tables -> handled by .sql script
-    #c.execute("""CREATE TABLE IF NOT EXISTS Categories (
-    #    id SMALLINT UNSIGNED NOT NULL PRIMARY KEY,
-    #    CategoryName VARCHAR(40) UNIQUE NOT NULL)""")
-
-    #c.execute("""CREATE TABLE IF NOT EXISTS Products (
-     #   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-      #  ProductName VARCHAR(40) UNIQUE NOT NULL,
-       # CategoryName VARCHAR(40) NOT NULL,
-    #    Places VARCHAR(40),
-    #    Stores VARCHAR(40),
-    #    Grade VARCHAR(1) NOT NULL)""")
-
-    #c.execute("""CREATE TABLE IF NOT EXISTS Substitutes (
-    #    id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    #    ProductName VARCHAR(40) NOT NULL,
-    #    SubName VARCHAR(40) NOT NULL,
-    #    purchase_places VARCHAR(40),
-    #    stores VARCHAR(40))""")
-
-    #c.execute("""CREATE TABLE IF NOT EXISTS Products (
-    #    id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    #    ProductName VARCHAR(40) UNIQUE NOT NULL,
-    #    CategoryName VARCHAR(40) NOT NULL,
-    #    Places VARCHAR(40),
-    #    Stores VARCHAR(40),
-    #    Grade VARCHAR(1),
-    #    CONSTRAINT fk_catname
-    #      FOREIGN KEY (CategoryName)
-    #      REFERENCES Categories(CategoryName))""")
 
     Category.objects.all().delete()
     Product.objects.all().delete()
     Substitute.objects.all().delete()
 
-
     #Population of the tables with HTTP content
-    cat_id=1
+    cat_id = 1
     for element in data:
         for entry in element["products"]:
             #Check the presence of critical keys/columns
-            if ("categories" in entry.keys() and "product_name" in entry.keys() and "nutrition_grade_fr" in entry.keys()):
+            if ("categories" in entry.keys() and
+                    "product_name" in entry.keys() and
+                    "nutrition_grade_fr" in entry.keys()):
                 if (entry["categories"] == '' or entry["product_name"] == ''):
                     #print("Rejeté car nul : - categorie : ",entry["categories"],"et produit",entry["product_name"])
                     pass
@@ -113,19 +57,19 @@ def update_tables():
                     #Check that the product doens't already exist
                     lprod = len(list(Product.objects.filter(ProductName=prod_short)))
 
-                    if (lprod==0):
+                    if lprod == 0:
 
                         #Retrieve the French name of the category
                         cat_split = entry["categories"].split(',')
-                        r=re.compile("fr*")
-                        cat_new=filter(r.match,cat_split)
-                        cat_short=list(cat_new)
-                        if (cat_short == []):
-                            cat_fin=cat_split[0]
+                        reg = re.compile("fr*")
+                        cat_new = filter(reg.match, cat_split)
+                        cat_short = list(cat_new)
+                        if cat_short == []:
+                            cat_fin = cat_split[0]
                         else:
-                            cat_fin=cat_short[0][3:]
+                            cat_fin = cat_short[0][3:]
 
-                        cat_fin=cat_fin[:40]
+                        cat_fin = cat_fin[:40]
 
                         if ("en:salty-snacks" in cat_fin):
                             cat_fin = "Snacks salés"
@@ -160,97 +104,82 @@ def update_tables():
                         if ("Fromages" in cat_fin):
                             cat_fin = "Fromages"
 
-
-
-                        print("Ajout en cours : - categorie : ",cat_fin,"et produit",prod_short)
-
-                        #Mysql version"""
-                        #c.execute("""SELECT id FROM Categories WHERE CategoryName like %s""", (cat_fin,))
-                        #cat_list=list(c.fetchall())
-                        #lg=len(cat_list)
-                        #print(cat_list)"""
+                        print("Ajout en cours : - categorie : ", cat_fin, "et produit", prod_short)
 
                         cat_query = Category.objects.filter(CategoryName=cat_fin).first()
-                        lg = len(list(Category.objects.filter(CategoryName=cat_fin)))
-                        print("Il y a déjà", lg,"occurrences pour la catégorie",cat_fin)
+                        prod_in_cat = len(list(Category.objects.filter(CategoryName=cat_fin)))
+                        print("Il y a déjà", prod_in_cat, "occurrences pour la catégorie", cat_fin)
 
                         #Category.objects.create(id=cat_id, CategoryName=cat_fin)
 
-                        if (lg==0):
-                            """
-                            Mysql db style
-                            """
-                            #c.execute("""INSERT IGNORE INTO Categories (id,CategoryName) VALUES (%s,%s)""", (cat_id,cat_fin,))
-
-                            #Import information and location, if they exist
-                            #if ("stores" in entry.keys() and "purchase_places" and "url" in entry.keys()):
-                                ##c.execute("""INSERT IGNORE INTO Products (ProductName,CategoryName,Grade,Places,Stores,Link,CatNum) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (prod_short,cat_fin,entry["nutrition_grade_fr"],entry["purchase_places"],entry["stores"],entry["url"],cat_id))
-                                #c.execute("""INSERT IGNORE INTO Products (ProductName,Grade,Places,Stores,Link,CatNum) VALUES (%s,%s,%s,%s,%s,%s)""", (prod_short,entry["nutrition_grade_fr"],entry["purchase_places"],entry["stores"],entry["url"],cat_id))
-
-                                #print("stores, place et url :", entry["stores"], entry["purchase_places"], entry["url"])
-                            #else:
-                               # #c.execute("""INSERT IGNORE INTO Products (ProductName,CategoryName,Grade,CatNum) VALUES (%s,%s,%s,%s)""", (prod_short,cat_fin,entry["nutrition_grade_fr"],cat_id,))
-                                #c.execute("""INSERT IGNORE INTO Products (ProductName,Grade,CatNum) VALUES (%s,%s,%s)""", (prod_short,entry["nutrition_grade_fr"],cat_id,))
-
-                            #print("Ce produit est ajouté :", entry["product_name"])
-
-                            #cat_id+=1
+                        if prod_in_cat == 0:
 
                             Category.objects.create(id=cat_id, CategoryName=cat_fin)
 
                             # Import information and location, if they exist
                             if ("stores" in entry.keys() and "purchase_places" in entry.keys() and "url" in entry.keys()):
                                 if "image_url" in entry.keys():
-                                    Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"],
+                                    Product.objects.create(ProductName=prod_short,
+                                                           Grade=entry["nutrition_grade_fr"],
                                                            Places=entry["purchase_places"][:40],
-                                                           Stores=entry["stores"][:40], Link=entry["url"][:150],
+                                                           Stores=entry["stores"][:40],
+                                                           Link=entry["url"][:150],
                                                            CatNum=cat_id, ImageLink=entry["image_url"][:150])
                                 else:
-                                    Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"],
+                                    Product.objects.create(ProductName=prod_short,
+                                                           Grade=entry["nutrition_grade_fr"],
                                                            Places=entry["purchase_places"][:40],
-                                                           Stores=entry["stores"][:40], Link=entry["url"][:150],
+                                                           Stores=entry["stores"][:40],
+                                                           Link=entry["url"][:150],
                                                            CatNum=cat_id, ImageLink="/static/searchapp/img/logo.png")
                             else:
                                 if "image_url" in entry.keys():
-                                    Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"],
-                                                           CatNum=cat_id, ImageLink=entry["image_url"][:150],Link=entry["url"][:150])
+                                    Product.objects.create(ProductName=prod_short,
+                                                           Grade=entry["nutrition_grade_fr"],
+                                                           CatNum=cat_id,
+                                                           ImageLink=entry["image_url"][:150],
+                                                           Link=entry["url"][:150])
                                 else:
-                                    Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"],
-                                                           CatNum=cat_id, ImageLink="/static/searchapp/img/logo.png",Link=entry["url"][:150])
+                                    Product.objects.create(ProductName=prod_short,
+                                                           Grade=entry["nutrition_grade_fr"],
+                                                           CatNum=cat_id,
+                                                           ImageLink="/static/searchapp/img/logo.png",
+                                                           Link=entry["url"][:150])
                             print("Ce produit est ajouté :", entry["product_name"])
 
-                            cat_id+=1
+                            cat_id += 1
 
 
                         else:
-
-                            """
-                            Mysql db style
-                            """
-                            #if ("stores" in entry.keys() and "purchase_places" and "url" in entry.keys()):
-                                ##c.execute("""INSERT IGNORE INTO Products (ProductName,CategoryName,Grade,Places,Stores,Link,CatNum) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (prod_short,cat_fin,entry["nutrition_grade_fr"],entry["purchase_places"],entry["stores"],entry["url"],cat_list[0]))
-                                #c.execute("""INSERT IGNORE INTO Products (ProductName,Grade,Places,Stores,Link,CatNum) VALUES (%s,%s,%s,%s,%s,%s)""", (prod_short,entry["nutrition_grade_fr"],entry["purchase_places"],entry["stores"],entry["url"],cat_list[0]))
-
-                                #print("stores, place et url :", entry["stores"], entry["purchase_places"], entry["url"])
-                            #else:
-                                ##c.execute("""INSERT IGNORE INTO Products (ProductName,Grade,CatNum) VALUES (%s,%s,%s)""", (prod_short,entry["nutrition_grade_fr"],cat_list[0],))
-                                ##c.execute("""INSERT IGNORE INTO Products (ProductName,CategoryName,Grade,CatNum) VALUES (%s,%s,%s,%s)""", (prod_short,cat_fin,entry["nutrition_grade_fr"],cat_list[0],))
-                                #c.execute("""INSERT IGNORE INTO Products (ProductName,Grade,CatNum) VALUES (%s,%s,%s)""", (prod_short,entry["nutrition_grade_fr"],cat_list[0],))
-
-                            #print("Ce produit est ajouté :", entry["product_name"])
-
                             if ("stores" in entry.keys() and "purchase_places" in entry.keys() and "url" in entry.keys()):
                                 if "image_url" in entry.keys():
-                                    Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"], Places=entry["purchase_places"][:40], Stores=entry["stores"][:40], Link=entry["url"][:150], CatNum=cat_query.id, ImageLink=entry["image_url"][:150])
+                                    Product.objects.create(ProductName=prod_short,\
+                                                           Grade=entry["nutrition_grade_fr"],\
+                                                           Places=entry["purchase_places"][:40],\
+                                                           Stores=entry["stores"][:40],\
+                                                           Link=entry["url"][:150],\
+                                                           CatNum=cat_query.id,\
+                                                           ImageLink=entry["image_url"][:150])
                                 else:
-                                    Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"], Places=entry["purchase_places"][:40], Stores=entry["stores"][:40], Link=entry["url"][:150], CatNum=cat_query.id, ImageLink="/static/searchapp/img/logo.png")
+                                    Product.objects.create(ProductName=prod_short,\
+                                                           Grade=entry["nutrition_grade_fr"],\
+                                                           Places=entry["purchase_places"][:40],\
+                                                           Stores=entry["stores"][:40],\
+                                                           Link=entry["url"][:150],\
+                                                           CatNum=cat_query.id,\
+                                                           ImageLink="/static/searchapp/img/logo.png")
                                 print("stores, place et url :", entry["stores"], entry["purchase_places"], entry["url"])
                             else:
                                 if "image_url" in entry.keys():
-                                    Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"], CatNum=cat_query.id, ImageLink=entry["image_url"][:150])
+                                    Product.objects.create(ProductName=prod_short,\
+                                                           Grade=entry["nutrition_grade_fr"],\
+                                                           CatNum=cat_query.id,\
+                                                           ImageLink=entry["image_url"][:150])
                                 else:
-                                    Product.objects.create(ProductName=prod_short, Grade=entry["nutrition_grade_fr"],
-                                                           CatNum=cat_query.id, ImageLink="/static/searchapp/img/logo.png")
+                                    Product.objects.create(ProductName=prod_short,\
+                                                           Grade=entry["nutrition_grade_fr"],
+                                                           CatNum=cat_query.id,
+                                                           ImageLink="/static/searchapp/img/logo.png")
                                 print("Ce produit est ajouté :", entry["product_name"])
 
                     else:

@@ -1,3 +1,12 @@
+"""
+This file describes the views of the Django site lememenmieux.herokuapp.com.
+"""
+
+
+import json
+import datetime
+
+import requests
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -7,14 +16,11 @@ from .models import Category, Product, Substitute, Update
 from .update_tables import update_tables
 from .findsubstitute import findsubstitute
 
-import requests
-import json
-import datetime
-
-
-# Create your views here.
 
 def index(request):
+    """
+    Actions triggered when / is called. Also manages authentication.
+    """
     usern = request.POST.get('username')
     passw = request.POST.get('password')
     create_user = request.POST.get('createuser')
@@ -25,85 +31,79 @@ def index(request):
     if create_user:
         if (usern is not None and passw is not None):
             new_user = User.objects.create_user(usern, '', passw)
-            message_bis = new_user.username
+            #message_bis = new_user.username
 
     if (usern is not None and passw is not None):
         user = authenticate(username=usern, password=passw)
-        if (user is not None):
+        if user is not None:
             login(request, user)
 
             if prod_id and sub_id:
                 return myproducts(request)
 
-            else:
-                context ={'username':usern,
-                      'authenticated':1}
-                return render(request, 'searchapp/index.html', context)
-        else:
-            message ='Connexion impossible'
-            context ={'message':message}
-            return render(request, 'searchapp/login.html', context)
 
-    else:
-        if request.user.is_authenticated:
-            usern = request.user.username
-            context ={'username':usern,
-                      'authenticated':1}
+            context = {'username':usern,
+                       'authenticated':1}
             return render(request, 'searchapp/index.html', context)
-        else:
-            return render(request, 'searchapp/index.html')
+
+        message = 'Connexion impossible'
+        context = {'message':message}
+        return render(request, 'searchapp/login.html', context)
+
+
+    if request.user.is_authenticated:
+        usern = request.user.username
+        context = {'username':usern,
+                   'authenticated':1}
+        return render(request, 'searchapp/index.html', context)
+
+    return render(request, 'searchapp/index.html')
 
 
 def results(request):
+    """
+    Actions triggered when a product is searched for on Open Food Facts API.
+    Displays an alternative, healthier product if it exists in the local DB.
+    """
 
     query = request.GET.get('query')
     #retrieve the query from the search bar
 
     try:
-        req = requests.get("https://world.openfoodfacts.org/cgi/search.pl?search_terms="+query+"&countries=en:france&search_simple=1&action=process&json=1")
+        req = requests.get("https://world.openfoodfacts.org/cgi/search.pl?search_terms="+\
+                           query+"&countries=en:france&search_simple=1&action=process&json=1")
         data = json.loads(req.content.decode('utf-8'))
+
     except:
         data = {
-                  "skip": 0,
-                  "page_size": "0",
-                  "page": 1,
-                  "products": [
-                    {"":""
-                    }
-                  ],
-                  "count": 0
+            "skip": 0,
+            "page_size": "0",
+            "page": 1,
+            "products": [
+                {"":""
                 }
+                ],
+            "count": 0
+            }
 
     if data["products"] == []:
-        message = "Désolé, ce produit n'existe pas dans la base !"
-        category = []
-        sub_list = []
-        prod_id = ''
-        sub_id = ''
-        sub_img = ''
-        sub_grade = ''
-        product = "Produit introuvable"
+        #message = "Désolé, ce produit n'existe pas dans la base !"
+        #product_result = "Produit introuvable"
 
-        context = {'product': product,
-                   'message': message,
-                   'prodimg': '/static/searchapp/img/plate.png'}
+        #context = {'product': product_result,
+        #           'message': message,
+        #           'prodimg': '/static/searchapp/img/plate.png'}
 
         #return render(request, 'searchapp/404.html', context)
         raise Http404("Produit introuvable")
 
     elif not "categories" in data["products"][0]:
-        message = "Pas assez d'information sur ce produit !"
-        category = []
-        sub_list = []
-        prod_id = ''
-        sub_id = ''
-        sub_img = ''
-        sub_grade = ''
-        product="Produit introuvable"
+        #message = "Pas assez d'information sur ce produit !"
+        #product = "Produit introuvable"
 
-        context = {'product' : product,
-                   'message': message,
-                   'prodimg': '/static/searchapp/img/plate.png'}
+        #context = {'product' : product,
+        #           'message': message,
+        #           'prodimg': '/static/searchapp/img/plate.png'}
 
         #return render(request, 'searchapp/404.html', context)
         raise Http404("Produit introuvable")
@@ -112,7 +112,8 @@ def results(request):
         categories = data["products"][0]["categories"].split(',')
         #prod_img = data["products"][0]["image_thumb_url"]
         prod_img = data["products"][0]["image_url"]
-        product = [data["products"][0]["product_name"], categories, data["products"][0]["nutrition_grades"], prod_img,data["products"][0]["url"]]
+        product = [data["products"][0]["product_name"], categories,\
+                   data["products"][0]["nutrition_grades"], prod_img, data["products"][0]["url"]]
 
 
         # Update the Product table if last update was too long ago
@@ -133,7 +134,7 @@ def results(request):
             Update.objects.create(LastUpdate=datetime.date.today())
             print("Update effectué. Last update effectué il y a "+str(delta.days)+" jours.")
 
-        update_tables()
+        #update_tables()
 
         #compare to the database
 
@@ -141,8 +142,8 @@ def results(request):
         list_results = findsubstitute(product)
 
 
-        if (list_results ==[]):
-            message ='Pas de substitut trouvé pour ce produit.'
+        if list_results == []:
+            message = 'Pas de substitut trouvé pour ce produit.'
             sub_list = []
             prod_id = Product.objects.filter(ProductName=product[0][:40]).first().id
             sub_id = ''
@@ -178,18 +179,21 @@ def results(request):
 
 
 def myproducts(request):
+    """
+    Displays all the products & substitutes saved by an authenticated user.
+    """
     prod_id = request.POST.get('prodid')
     sub_id = request.POST.get('subid')
     user_id = request.user.id
 
     erase = request.GET.get('erase')
 
-    if (erase=='1'):
+    if erase == '1':
         Substitute.objects.all().delete()
 
     if user_id is None:
-        message='Connectez-vous afin de pouvoir sauvegarder vos recherches.'
-        page_link = "/searchapp/product"
+        message = 'Connectez-vous afin de pouvoir sauvegarder vos recherches.'
+        #page_link = "/searchapp/product"
 
         context = {'prodid': prod_id,
                    'subid' : sub_id,
@@ -197,69 +201,73 @@ def myproducts(request):
 
         return render(request, 'searchapp/login.html', context)
 
+    print(prod_id)
+    print(sub_id)
+    #Check if the user has pressed the Save button from the results page
+    if (prod_id is None or sub_id is None or prod_id == "None" or sub_id == "None"):
+        #prod_id = 'rien du tout'
+        #sub_id = 'rien du tout'
+        message = ''
+
+
+    #Save the results -> à ajouter check the referer !!!!!!
     else:
-        print(prod_id)
-        print(sub_id)
-        #Check if the user has pressed the Save button from the results page
-        if (prod_id is None or sub_id is None or prod_id == "None" or sub_id == "None"):
-            #prod_id = 'rien du tout'
-            #sub_id = 'rien du tout'
-            message=''
-
-
-        #Save the results -> à ajouter check the referer !!!!!!
+        lprod = len(list(Substitute.objects.filter(ProdNum=prod_id,\
+                                                   SubNum=sub_id, UserId=user_id)))
+        if lprod == 0:
+            Substitute.objects.create(ProdNum=prod_id, SubNum=sub_id, UserId=user_id)
+            #prod = Product.objects.filter(id=prod_id).first()
+            #sub = Product.objects.filter(id=sub_id).first()
+            message = 'Résultat sauvegardé !'
         else:
-            lprod = len(list(Substitute.objects.filter(ProdNum=prod_id, SubNum=sub_id, UserId=user_id)))
-            if (lprod == 0):
-                Substitute.objects.create(ProdNum=prod_id, SubNum=sub_id, UserId=user_id)
-                #prod = Product.objects.filter(id=prod_id).first()
-                #sub = Product.objects.filter(id=sub_id).first()
-                message = 'Résultat sauvegardé !'
-            else:
-                message = 'Vous avez déjà enregistré ce substitut pour ce produit.'
+            message = 'Vous avez déjà enregistré ce substitut pour ce produit.'
 
-        substitutes = list(Substitute.objects.filter(UserId=user_id))
-        saved_list = []
+    substitutes = list(Substitute.objects.filter(UserId=user_id))
+    saved_list = []
 
-        for save in substitutes:
-            product = Product.objects.filter(id=save.ProdNum).first()
-            substitute = Product.objects.filter(id=save.SubNum).first()
-            minilist = [product.ProductName, substitute.ProductName, save.ProdNum,
-                        save.SubNum, product.ImageLink, substitute.ImageLink]
-            saved_list.append(minilist)
+    for save in substitutes:
+        product = Product.objects.filter(id=save.ProdNum).first()
+        substitute = Product.objects.filter(id=save.SubNum).first()
+        minilist = [product.ProductName, substitute.ProductName, save.ProdNum,\
+                    save.SubNum, product.ImageLink, substitute.ImageLink]
+        saved_list.append(minilist)
 
-        context = {'saved' : saved_list,
-                   'message' : message}
+    context = {'saved' : saved_list,
+               'message' : message}
 
-        return render(request, 'searchapp/myproducts.html', context)
+    return render(request, 'searchapp/myproducts.html', context)
 
 def product(request):
+    """
+    Displays the detailed information of a product.
+    """
     prod_id = request.POST.get('prodid')
 
     try:
-        product = Product.objects.filter(id=prod_id).first()
-        categ = Category.objects.filter(id=product.CatNum).first().CategoryName
+        prod = Product.objects.filter(id=prod_id).first()
+        categ = Category.objects.filter(id=prod.CatNum).first().CategoryName
 
-        if product.Grade == 'a':
+        if prod.Grade == 'a':
             img_score = "score_a.jpg"
-        elif product.Grade == 'b':
+        elif prod.Grade == 'b':
             img_score = "score_b.jpg"
-        elif product.Grade == 'c':
+        elif prod.Grade == 'c':
             img_score = "score_c.jpg"
-        elif product.Grade == 'd':
+        elif prod.Grade == 'd':
             img_score = "score_d.jpg"
-        elif product.Grade == 'e':
+        elif prod.Grade == 'e':
             img_score = "score_e.jpg"
 
-        if not product.Stores:
-            if not product.Places:
+        if not prod.Stores:
+            if not prod.Places:
                 message = "Il n'y a pas de lieu de vente connu pour ce produit."
             else:
-                message = "Vous pouvez-vous procurer ce produit ici : "+product.Places
+                message = "Vous pouvez-vous procurer ce produit ici : "+prod.Places
         else:
-            message = "Vous pouvez-vous procurer ce produit ici : "+product.Places+", "+product.Stores
+            message = "Vous pouvez-vous procurer ce produit ici : "+prod.Places+",\
+             "+prod.Stores
 
-        context = {'product': product,
+        context = {'product': prod,
                    'categ': categ,
                    'message': message,
                    'scoreimg': img_score}
@@ -271,30 +279,56 @@ def product(request):
     return render(request, 'searchapp/product.html', context)
 
 def myaccount(request):
+    """
+    Access to an authenticated user's account page.
+    """
+    update_pass = request.POST.get('updatepass')
+    new_passw = request.POST.get('password')
+
+    message = ''
 
     if request.user.is_authenticated:
         usern = request.user.username
-        authenticated=request.user.is_authenticated
+        authenticated = request.user.is_authenticated
+
+        if update_pass is not None and new_passw is not None:
+            user_obj = User.objects.get(username=usern)
+            user_obj.set_password(new_passw)
+            user_obj.save()
+            user = authenticate(username=usern, password=new_passw)
+            if user is not None:
+                login(request, user)
+
+            message = "Mot de passe modifié ! "
+
         context = {'username': usern,
-                   'authenticated': authenticated}
+                   'authenticated': authenticated,
+                   'message' : message}
+
+
 
         return render(request, 'searchapp/myaccount.html', context)
 
-    else:
-        authenticated = request.user.is_authenticated
-        usern=''
-        return render(request, 'searchapp/login.html')
-
-
-
+    #authenticated = request.user.is_authenticated
+    #usern = ''
+    return render(request, 'searchapp/login.html')
 
 def dologin(request):
+    """
+    Displays the login page.
+    """
     return render(request, 'searchapp/login.html')
 
 
 def dologout(request):
+    """
+    Logs an authenticated user out.
+    """
     logout(request)
     return render(request, 'searchapp/index.html')
 
 def legalnotice(request):
+    """
+    Displays the legal notices.
+    """
     return render(request, 'searchapp/legalnotice.html')

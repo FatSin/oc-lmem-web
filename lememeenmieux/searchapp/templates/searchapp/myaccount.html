@@ -12,17 +12,18 @@
 
 <section id="account">
     <div class="container text-center">
-        <form action="/searchapp/myaccount" method="post">
+        <!--<form action="/searchapp/myaccount/" method="post">
             {% csrf_token %}
-        <!--<button class="btn btn-primary btn-xl js-scroll-trigger" value="" method="post" name="id">Sauvegarder</button>!-->
+
             <input type="hidden" name="prodid" value="{{ prodid }}">
             <input type="hidden" name="subid" value="{{ subid }}">
             <input type="hidden" name="updateuser" value="1">
             <input type="text" name="username" placeholder="Nouveau nom d'utilisateur" size="20" maxlength="30">
             <input type="submit" class="btn btn-primary btn-xl js-scroll-trigger" value="Changer mon nom d'utilisateur" method="post" >
 
-        </form>
-        <form action="/searchapp/myaccount" method="post">
+        </form>!-->
+        <p>{{message}}</p><br>
+        <form action="/searchapp/myaccount/" method="post">
             {% csrf_token %}
         <!--<button class="btn btn-primary btn-xl js-scroll-trigger" value="" method="post" name="id">Sauvegarder</button>!-->
             <input type="hidden" name="prodid" value="{{ prodid }}">
