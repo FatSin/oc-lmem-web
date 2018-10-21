@@ -34,7 +34,7 @@ else:
     DEBUG = True
 
 #ALLOWED_HOSTS = ['127.0.0.1','localhost']
-ALLOWED_HOSTS = ['lememeenmieux.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['lememeenmieux.herokuapp.com', '127.0.0.1', '51.254.202.2']
 
 #if os.environ.get('ENV') == 'PRODUCTION':
     # Static files settings
@@ -119,7 +119,7 @@ DATABASES = {
         'NAME': 'openfood', # le nom de notre base de donnees creee precedemment
         'USER': 'ocsql', # attention : remplacez par votre nom d'utilisateur
         'PASSWORD': 'ocsql',
-        'HOST': '',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
