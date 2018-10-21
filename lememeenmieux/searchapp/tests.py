@@ -18,9 +18,9 @@ class Routetesting(TestCase):
     def test_index(self):
         response = self.client.get(reverse('index'))
         self.assertEqual(response.status_code, 200)
-    def test_results_page(self):
-        response = self.client.get(reverse('results'))
-        self.assertEqual(response.status_code, 200)
+#    def test_results_page(self):
+#        response = self.client.get(reverse('results'))
+#        self.assertEqual(response.status_code, 200)
     def test_product_page(self):
         response = self.client.get(reverse('product'))
         self.assertEqual(response.status_code, 200)
