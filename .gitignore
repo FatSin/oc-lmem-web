@@ -1,2 +1,3 @@
 virt_lmem/
 lememeenmieux/lememeenmieux/staticfiles/
+lememeenmieux/lememeenmieux/settings/production.py
